@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>面包预定</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe4e1 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #d4541c;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: #8b4513;
+            font-size: 1.1rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #d4541c;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ffe4e1;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"], select, input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #d4541c;
+        }
+
+
+
+        .product-card {
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: all 0.3s;
+        }
+
+        .product-card:hover {
+            border-color: #d4541c;
+            box-shadow: 0 4px 12px rgba(212, 84, 28, 0.1);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .product-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .product-price {
+            color: #d4541c;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .flavor-group {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .flavor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .flavor-name {
+            color: #666;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: #ffe4e1;
+            color: #d4541c;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .qty-btn:hover {
+            background: #d4541c;
+            color: white;
+        }
+
+        .qty-display {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .spec-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .spec-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .spec-btn.active {
+            border-color: #d4541c;
+            background: #d4541c;
+            color: white;
+        }
+
+        .total-section {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .total-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .total-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .total-amount {
+            font-size: 2rem;
+            color: #d4541c;
+            font-weight: 700;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4541c 0%, #e85a3c 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 84, 28, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .order-summary {
+            line-height: 1.8;
+        }
+
+        .summary-section {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .error {
+            border-color: #ff4444 !important;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .section {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🥐 面包预定</h1>
+            <p class="subtitle">新鲜美味，轻松预定</p>
+        </header>
+
+        <div class="section">
+            <h2 class="section-title">👤 用户信息</h2>
+            <div class="form-group">
+                <label for="nickname">微信昵称 <span style="color: #d4541c">*</span></label>
+                <input type="text" id="nickname" placeholder="请输入微信昵称（1-20个字符）" maxlength="20">
+                <div class="error-message" id="nickname-error"></div>
+            </div>
+            <div class="form-group">
+                <label>配送地址 <span style="color: #d4541c">*</span></label>
+                <input type="text" id="address" placeholder="请输入完整的配送地址（省市区+详细地址）">
+                <div class="error-message" id="address-error"></div>
+            </div>
+            <div class="form-group">
+                <label>备注（选填）</label>
+                <input type="text" id="remark" placeholder="请输入备注信息（如特殊要求等）">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">🍞 产品选择</h2>
+            <div id="productList"></div>
+        </div>
+
+        <div class="total-section">
+            <div class="total-display">
+                <span class="total-label">订单总计：</span>
+                <span class="total-amount" id="totalAmount">¥0.00</span>
+            </div>
+            <button class="btn btn-primary" onclick="previewOrder()">预览订单</button>
+        </div>
+    </div>
+
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="section-title" style="border: none; margin: 0; padding: 0;">📋 订单确认</h2>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="order-summary" id="orderSummary"></div>
+            <button class="btn btn-primary" style="margin-top: 20px;" onclick="copyOrder()">复制订单</button>
+            <button class="btn btn-secondary" onclick="closeModal()">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: '麻薯', price: 1, unit: '个', flavors: null },
+            { id: 2, name: '奶油包', price: 3, unit: '个', flavors: null },
+            { id: 3, name: '面包圈', price: 5, unit: '两个', flavors: ['紫薯', '板栗', '豆沙', '绿豆'] },
+            { id: 4, name: '脆皮小蛋糕', price: 5, unit: '六个', flavors: null },
+            { id: 5, name: '蜂蜜小面包', price: 5, unit: '八个', flavors: ['原味', '豆沙'] },
+            { id: 6, name: '巨无霸肉松卷', price: 5, unit: '个', flavors: ['原味', '海苔'] },
+            { id: 7, name: '虎皮卷', price: 5, unit: '两个', flavors: ['原味', '紫薯', '红丝绒', '抹茶', '巧克力'] },
+            { id: 8, name: '蛋挞', price: 5, unit: '三个', flavors: ['¥5/三个', '¥10/七个'] },
+            { id: 9, name: '奶油杯', price: 5, unit: '杯', flavors: ['草莓', '蓝莓', '奥利奥'] },
+            { id: 10, name: '奶酪包', price: 5, unit: '个', flavors: ['草莓', '蓝莓', '奥利奥'] }
+        ];
+
+        let orderData = {};
+        let specSelections = {};
+
+        function initProductList() {
+            const container = document.getElementById('productList');
+            container.innerHTML = products.map(product => {
+                orderData[product.id] = product.flavors ? {} : 0;
+                if (product.specs) {
+                    specSelections[product.id] = 0;
+                }
+
+                let html = `
+                    <div class="product-card">
+                        <div class="product-header">
+                            <span class="product-name">${product.name}</span>
+                            <span class="product-price">${product.specs ? '多规格' : '¥' + product.price + '/' + product.unit}</span>
+                        </div>
+                `;
+
+                if (product.specs) {
+                    html += `
+                        <div class="spec-selector" id="spec-${product.id}">
+                            ${product.specs.map((spec, idx) => `
+                                <button class="spec-btn ${idx === 0 ? 'active' : ''}" onclick="selectSpec(${product.id}, ${idx})">${spec.name}</button>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                if (product.flavors) {
+                    html += `<div class="flavor-group">`;
+                    product.flavors.forEach(flavor => {
+                        orderData[product.id][flavor] = 0;
+                        html += `
+                            <div class="flavor-item">
+                                <span class="flavor-name">${flavor}</span>
+                                <div class="quantity-control">
+                                    <button class="qty-btn" onclick="changeFlavorQty(${product.id}, '${flavor}', -1)">-</button>
+                                    <span class="qty-display" id="qty-${product.id}-${flavor}">0</span>
+                                    <button class="qty-btn" onclick="changeFlavorQty(${product.id}, '${flavor}', 1)">+</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                } else if (!product.specs) {
+                    html += `
+                        <div class="quantity-control" style="justify-content: flex-end;">
+                            <button class="qty-btn" onclick="changeQty(${product.id}, -1)">-</button>
+                            <span class="qty-display" id="qty-${product.id}">0</span>
+                            <button class="qty-btn" onclick="changeQty(${product.id}, 1)">+</button>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="quantity-control" style="justify-content: flex-end; margin-top: 12px;">
+                            <button class="qty-btn" onclick="changeQty(${product.id}, -1)">-</button>
+                            <span class="qty-display" id="qty-${product.id}">0</span>
+                            <button class="qty-btn" onclick="changeQty(${product.id}, 1)">+</button>
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
+                return html;
+            }).join('');
+        }
+
+        function changeQty(productId, delta) {
+            if (typeof orderData[productId] !== 'object') {
+                orderData[productId] = Math.max(0, (orderData[productId] || 0) + delta);
+                document.getElementById(`qty-${productId}`).textContent = orderData[productId];
+                calculateTotal();
+            }
+        }
+
+        function changeFlavorQty(productId, flavor, delta) {
+            orderData[productId][flavor] = Math.max(0, (orderData[productId][flavor] || 0) + delta);
+            document.getElementById(`qty-${productId}-${flavor}`).textContent = orderData[productId][flavor];
+            calculateTotal();
+        }
+
+        function selectSpec(productId, specIdx) {
+            specSelections[productId] = specIdx;
+            const buttons = document.querySelectorAll(`#spec-${productId} .spec-btn`);
+            buttons.forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === specIdx);
+            });
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            products.forEach(product => {
+                if (product.flavors) {
+                    for (let flavor in orderData[product.id]) {
+                        let price = product.price;
+                        if (product.id === 8) {
+                            if (flavor === '¥10/七个') {
+                                price = 10;
+                            }
+                        }
+                        total += orderData[product.id][flavor] * price;
+                    }
+                } else if (product.specs) {
+                    const specIdx = specSelections[product.id] || 0;
+                    total += orderData[product.id] * product.specs[specIdx].price;
+                } else {
+                    total += orderData[product.id] * product.price;
+                }
+            });
+            document.getElementById('totalAmount').textContent = '¥' + total.toFixed(2);
+        }
+
+        function validateForm() {
+            let isValid = true;
+            document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+            const nickname = document.getElementById('nickname').value.trim();
+            if (!nickname || nickname.length < 1 || nickname.length > 20) {
+                document.getElementById('nickname').classList.add('error');
+                document.getElementById('nickname-error').textContent = '请输入1-20个字符的微信昵称';
+                isValid = false;
+            }
+
+            const address = document.getElementById('address').value.trim();
+            if (!address) {
+                document.getElementById('address').classList.add('error');
+                document.getElementById('address-error').textContent = '请填写完整的配送地址';
+                isValid = false;
+            }
+
+            let hasProduct = false;
+            for (let id in orderData) {
+                if (typeof orderData[id] === 'object') {
+                    for (let f in orderData[id]) {
+                        if (orderData[id][f] > 0) hasProduct = true;
+                    }
+                } else if (orderData[id] > 0) {
+                    hasProduct = true;
+                }
+            }
+
+            if (!hasProduct) {
+                alert('请至少选择一个产品');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function previewOrder() {
+            if (!validateForm()) return;
+
+            let remark = document.getElementById('remark').value.trim();
+            let summary = `
+                <div class="summary-section">
+                    <strong>用户信息</strong><br>
+                    微信昵称：${document.getElementById('nickname').value}<br>
+                    配送地址：${document.getElementById('address').value}
+                    ${remark ? '备注：' + remark + '<br>' : ''}
+                </div>
+                <div class="summary-section">
+                    <strong>产品明细</strong><br>
+            `;
+
+            let total = 0;
+            products.forEach(product => {
+                if (product.flavors) {
+                    let hasSelection = false;
+                    let productTotal = 0;
+                    let flavorText = [];
+                    for (let flavor in orderData[product.id]) {
+                        if (orderData[product.id][flavor] > 0) {
+                            hasSelection = true;
+                            let price = product.price;
+                            if (product.id === 8) {
+                                if (flavor === '¥10/七个') {
+                                    price = 10;
+                                }
+                            }
+                            const subtotal = orderData[product.id][flavor] * price;
+                            productTotal += subtotal;
+                            flavorText.push(`${flavor} ×${orderData[product.id][flavor]}`);
+                        }
+                    }
+                    if (hasSelection) {
+                        if (flavorText.length > 0) {
+                            summary += `${product.name} (${flavorText.join(', ')}) - ¥${productTotal.toFixed(2)}<br>`;
+                        }
+                        total += productTotal;
+                    }
+                } else if (product.specs) {
+                    if (orderData[product.id] > 0) {
+                        const specIdx = specSelections[product.id] || 0;
+                        const spec = product.specs[specIdx];
+                        const subtotal = orderData[product.id] * spec.price;
+                        summary += `${product.name} (${spec.name}) ×${orderData[product.id]} - ¥${subtotal.toFixed(2)}<br>`;
+                        total += subtotal;
+                    }
+                } else {
+                    if (orderData[product.id] > 0) {
+                        const subtotal = orderData[product.id] * product.price;
+                        summary += `${product.name} ×${orderData[product.id]} - ¥${subtotal.toFixed(2)}<br>`;
+                        total += subtotal;
+                    }
+                }
+            });
+
+            summary += `
+                </div>
+                <div class="summary-section" style="border: none; padding-bottom: 0;">
+                    <div class="summary-item">
+                        <strong>订单总计</strong>
+                        <strong style="color: #d4541c; font-size: 1.3rem;">¥${total.toFixed(2)}</strong>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('orderSummary').innerHTML = summary;
+            document.getElementById('orderModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('orderModal').classList.remove('active');
+        }
+
+        function copyOrder() {
+            let text = '面包预定订单\n';
+            let remark = document.getElementById('remark').value.trim();
+            text += '用户信息：\n';
+            text += `微信昵称：${document.getElementById('nickname').value}\n`;
+            text += `配送地址：${document.getElementById('address').value}\n`;
+            if (remark) {
+                text += `备注：${remark}\n`;
+            }
+            text += '\n产品明细：\n';
+
+            let total = 0;
+            products.forEach(product => {
+                if (product.flavors) {
+                    for (let flavor in orderData[product.id]) {
+                        if (orderData[product.id][flavor] > 0) {
+                            let price = product.price;
+                            if (product.id === 8 && flavor === '¥10/七个') {
+                                price = 10;
+                            }
+                            const subtotal = orderData[product.id][flavor] * price;
+                            text += `${product.name} ${flavor} ×${orderData[product.id][flavor]} - ¥${subtotal.toFixed(2)}\n`;
+                            total += subtotal;
+                        }
+                    }
+                } else if (product.specs) {
+                    if (orderData[product.id] > 0) {
+                        const specIdx = specSelections[product.id] || 0;
+                        const spec = product.specs[specIdx];
+                        const subtotal = orderData[product.id] * spec.price;
+                        text += `${product.name} ${spec.name} ×${orderData[product.id]} - ¥${subtotal.toFixed(2)}\n`;
+                        total += subtotal;
+                    }
+                } else {
+                    if (orderData[product.id] > 0) {
+                        const subtotal = orderData[product.id] * product.price;
+                        text += `${product.name} ×${orderData[product.id]} - ¥${subtotal.toFixed(2)}\n`;
+                        total += subtotal;
+                    }
+                }
+            });
+
+            text += `\n订单总计：¥${total.toFixed(2)}\n`;
+            text += `下单时间：${new Date().toLocaleString()}\n`;
+
+            // 复制到剪贴板
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('订单已复制到剪贴板，可以直接粘贴到聊天框！');
+                    closeModal();
+                }).catch(err => {
+                    alert('复制失败，请手动复制订单内容');
+                });
+            } else {
+                // 兼容性处理
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('订单已复制到剪贴板，可以直接粘贴到聊天框！');
+                    closeModal();
+                } catch (err) {
+                    alert('复制失败，请手动复制订单内容');
+                } finally {
+                    document.body.removeChild(textArea);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initProductList();
+        });
+
+        document.getElementById('orderModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // 微信浏览器兼容性处理
+        if (typeof WeixinJSBridge !== 'undefined') {
+            WeixinJSBridge.call('hideOptionMenu');
+        } else {
+            document.addEventListener('WeixinJSBridgeReady', function() {
+                WeixinJSBridge.call('hideOptionMenu');
+            }, false);
+        }
+    </script>
+</body>
+</html>
